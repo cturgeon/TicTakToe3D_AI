@@ -12,10 +12,7 @@ public class TicTakLearner {
 	public TicTacToeComputer COMPUTER2;
 	public TicTacToeComputer COMPUTER1;
 	
-	
-	
 	public LocationUtility[][][] utilityFunctions;
-	public int CONDITION;
 	public int USERTURN;
 	
 
@@ -44,9 +41,9 @@ public class TicTakLearner {
 					BOARD[x][y][z] = 0;
 					utilityFunctions[x][y][z] = new LocationUtility();
 					
-					// TODO just random for now
-					s = r.nextDouble();
-					utilityFunctions[x][y][z].setUtility(s); 
+//					// TODO just random for now
+//					s = r.nextDouble();
+//					utilityFunctions[x][y][z].setUtility(s); 
 				}
 			}
 		}
@@ -58,17 +55,26 @@ public class TicTakLearner {
 	
 	public void runGame() {
 		
-		int check = 10;
+		int check = 100;
 		
 		while (check > 0) {
+			reset();
 			while (!checkWin(OPPONENT, BOARD) && !checkWin(PLAYER, BOARD)) {
 				if (!isBoardFull()) {
 					lastPick();
 					findBestMove(USERTURN);
 				}
 			}
+			for (int x = 0; x < BOARDSIZE; x++) {
+				for (int y = 0; y < BOARDSIZE; y++) {
+					for (int z = 0; z < BOARDSIZE; z++) {
+						if (BOARD[x][y][z] == PLAYER) {
+							utilityFunctions[x][y][z].setUtility(utilityFunctions[x][y][z].getUtility() + 1.01);
+						}
+					}
+				}
+			}
 			check--;
-			System.out.println("Winner: " + USERTURN + " with condition: " + CONDITION);
 		}
 		
 		
@@ -125,12 +131,12 @@ public class TicTakLearner {
 		}
 	}
 	
-	public int[][][] boardCopy() {
+	public int[][][] boardCopy(int[][][] board) {
 		int[][][] boardCopy = new int[BOARDSIZE][BOARDSIZE][BOARDSIZE];
 		for (int x = 0; x < BOARDSIZE; x++) {
 			for (int y = 0; y < BOARDSIZE; y++) {
 				for (int z = 0; z < BOARDSIZE; z++) {
-					boardCopy[x][y][z] = BOARD[x][y][z];
+					boardCopy[x][y][z] = board[x][y][z];
 				}
 			}
 		}
@@ -152,22 +158,27 @@ public class TicTakLearner {
 		int j = 0;
 		int k = 0;
 		
-		for (int x = 0; x < BOARDSIZE; x++) {
-			for (int y = 0; y < BOARDSIZE; y++) {
-				for (int z = 0; z < BOARDSIZE; z++) {
-					if (BOARD[x][y][z] == 0) {
-						if (utilityFunctions[x][y][z].getUtility() > bestMove.getUtility()) {
-							i = x;
-							j = y;
-							k = z;
-							bestMove = utilityFunctions[x][y][z];
+		int[] win = winChecker(USERTURN, 2);
+		if (win[3] == 2) { // for 4 in a row
+			BOARD[win[0]][win[1]][win[2]] = user;
+		}else {
+			for (int x = 0; x < BOARDSIZE; x++) {
+				for (int y = 0; y < BOARDSIZE; y++) {
+					for (int z = 0; z < BOARDSIZE; z++) {
+						if (BOARD[x][y][z] == 0) {
+							if (utilityFunctions[x][y][z].getUtility() >= bestMove.getUtility()) {
+								i = x;
+								j = y;
+								k = z;
+								bestMove = utilityFunctions[x][y][z];
+							}
 						}
 					}
 				}
 			}
+			
+			BOARD[i][j][k] = user;
 		}
-		
-		BOARD[i][j][k] = user;
 	}
 	
 	
@@ -179,22 +190,47 @@ public class TicTakLearner {
 	// do best utility
 	
 	
-	public int[] winChecker(int user) {
+	public int[] winChecker(int user, int depth) {
 		
-		int[] location = new int[3];
+		if (depth == 0) {
+			return null;
+		}
 		
-		int[][][] board = boardCopy();
+		int[] location = new int[4];
+		
+		int[][][] board = boardCopy(BOARD);
 		for (int x = 0; x < BOARDSIZE; x++) {
 			for (int y = 0; y < BOARDSIZE; y++) {
 				for (int z = 0; z < BOARDSIZE; z++) {
 					if (board[x][y][z] == 0) {
 						board[x][y][z] = user;
-						if (checkWin(user, board)) {
+						if (checkWin(user, board)) { // gets four in a row
 							location[0] = x;
 							location[1] = y;
 							location[2] = z;
+							location[3] = depth;
 							return location;
 						}
+
+//						for (int i = 0; i < BOARDSIZE; i++) {
+//							for (int j = 0; j < BOARDSIZE; j++) {
+//								for (int k = 0; k < BOARDSIZE; k++) {
+//									if (board[i][j][k] == 0) {
+//										board[i][j][k] = user;
+//										if (checkWin(user, board)) {
+//											location[0] = i;
+//											location[1] = j;
+//											location[2] = k;
+//											location[3] = depth--;
+////											System.out.println(location[0] + " " + location[1] + " " + location[2] + " Three in a row");
+//											utilityFunctions[x][y][z].setUtility(utilityFunctions[x][y][z].getUtility() + 0.05);
+//											return location;
+//										}
+//										board[i][j][k] = 0;
+//									}
+//								}
+//							}
+//						}
 						board[x][y][z] = 0;
 					}
 				}
@@ -206,43 +242,6 @@ public class TicTakLearner {
 	
 	
 	
-	
-	/*
-	 * minimax(board, depth, isMaximizingPlayer);
-	 * 
-	 * 
-	 * if terminal
-	 * 		return value
-	 * 
-	 * 
-	 * if maxiPlayer
-	 * 		bestVal = -10000
-	 * 		iterate each move on board
-	 * 			value = minimax(board, depth+1, false)
-	 * 			bestValue = max (bestVal, value)
-	 * 		return bestVal
-	 * else
-	 * 		bestVal = 10000
-	 * 		iterate each move on board
-	 * 			value = minimax(board, depth+1, true)
-	 * 			bestVal = min(bestVal, value)
-	 * 		return bestVal
-	 * 
-	 */			
-	public int Minimax(int depth, boolean isMaxPlayer, int user) {
-		int value = 0;
-		if (isBoardFull()) {
-			return value;
-		}
-		
-		if (isMaxPlayer) {
-			value = -10000;
-			
-		}
-		
-		return value;
-		
-	}
 	
 	public boolean checkRow3D(int user, int[][][] board) {
 		int check = 0;
@@ -438,25 +437,18 @@ public class TicTakLearner {
 	public boolean checkWin(int user, int[][][] board) {
 		boolean check = false;
 		if (checkCol(user, board)) {
-			CONDITION = 1;
 			check = true;
 		}else if (checkCol3D(user, board)) {
-			CONDITION = 2;
 			check = true;
 		}else if (checkDiagonal(user, board)) {
-			CONDITION = 3;
 			check = true;
 		}else if (checkDiagonal3D(user, board)) {
-			CONDITION = 4;
 			check = true;
 		}else if (checkRow(user, board)) {
-			CONDITION = 5;
 			check = true;
 		}else if (checkRow3D(user, board)) {
-			CONDITION = 6;
 			check = true;
 		}else if (checkVertical(user, board)) {
-			CONDITION = 7;
 			check = true;
 		}
 		
