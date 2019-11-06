@@ -1,7 +1,4 @@
 package ticTak3d;
-
-import java.util.Random;
-
 public class TicTakLearner {
 	
 	
@@ -12,7 +9,6 @@ public class TicTakLearner {
 	public TicTacToeComputer COMPUTER2;
 	public TicTacToeComputer COMPUTER1;
 	
-	public LocationUtility[][][] utilityFunctions;
 	public int USERTURN;
 	
 
@@ -25,30 +21,17 @@ public class TicTakLearner {
 			COMPUTER2 = new TicTacToeComputer(2, BOARDSIZE);
 		}
 		
-		
-		
 		BOARD = new int[BOARDSIZE][BOARDSIZE][BOARDSIZE];
-		utilityFunctions = new LocationUtility[BOARDSIZE][BOARDSIZE][BOARDSIZE];
-		
-		
-		// just random for new TODO
-		Random r = new Random();
-		double s = 0.0;
 		
 		for (int x = 0; x < BOARDSIZE; x++) {
 			for (int y = 0; y < BOARDSIZE; y++) {
 				for (int z = 0; z < BOARDSIZE; z++) {
 					BOARD[x][y][z] = 0;
-					utilityFunctions[x][y][z] = new LocationUtility();
-					
-//					// TODO just random for now
-//					s = r.nextDouble();
-//					utilityFunctions[x][y][z].setUtility(s); 
 				}
 			}
 		}
 		
-		COMPUTER1 = new TicTacToeComputer(9, utilityFunctions);
+		COMPUTER1 = new TicTacToeComputer(9, BOARDSIZE);
 		OPPONENT = COMPUTER1.getInt();
 	}
 	
@@ -65,19 +48,34 @@ public class TicTakLearner {
 					findBestMove(USERTURN);
 				}
 			}
-			for (int x = 0; x < BOARDSIZE; x++) {
-				for (int y = 0; y < BOARDSIZE; y++) {
-					for (int z = 0; z < BOARDSIZE; z++) {
-						if (BOARD[x][y][z] == PLAYER) {
-							utilityFunctions[x][y][z].setUtility(utilityFunctions[x][y][z].getUtility() + 1.01);
-						}
-					}
-				}
-			}
+			
+			setUtilities(USERTURN);
+			
 			check--;
 		}
 		
 		
+		
+	}
+	
+	public void setUtilities(int user) {
+		TicTacToeComputer computer = null;
+		
+		if (user == COMPUTER1.getInt()) {
+			computer = COMPUTER1;
+		} else {
+			computer = COMPUTER2;
+		}
+		
+		for (int x = 0; x < BOARDSIZE; x++) {
+			for (int y = 0; y < BOARDSIZE; y++) {
+				for (int z = 0; z < BOARDSIZE; z++) {
+					if (BOARD[x][y][z] == computer.getInt()) {
+						computer.setUtility(x, y, z, computer.getUtility(x, y, z) + 1.01);
+					}
+				}
+			}
+		}
 		
 	}
 	
@@ -101,11 +99,21 @@ public class TicTakLearner {
 		}
 	}
 	
-	public void printUtilities() {
+	public void printUtilities(int user) {
+		
+		TicTacToeComputer computer = null;
+		
+		if (user == COMPUTER1.getInt()) {
+			computer = COMPUTER1;
+		} else {
+			computer = COMPUTER2;
+		}
+		
+		
 		for (int x = 0; x < BOARDSIZE; x++) {
 			for (int y = 0; y < BOARDSIZE; y++) {
 				for (int z = 0; z < BOARDSIZE; z++) {
-					System.out.printf("%.5f" + "  ", utilityFunctions[x][y][z].getUtility());
+					System.out.printf("%.5f" + "  ", computer.getUtility(x, y, z));
 				}
 				System.out.println();
 			}
@@ -152,6 +160,18 @@ public class TicTakLearner {
 	 * return bestMove
 	 */
 	public void findBestMove(int user) {
+		
+		TicTacToeComputer computer = null;
+		
+		if (user == COMPUTER1.getInt()) {
+			computer = COMPUTER1;
+		} else {
+			computer = COMPUTER2;
+		}
+		
+		
+		
+		
 		LocationUtility bestMove = new LocationUtility();
 		
 		int i = 0;
@@ -166,11 +186,15 @@ public class TicTakLearner {
 				for (int y = 0; y < BOARDSIZE; y++) {
 					for (int z = 0; z < BOARDSIZE; z++) {
 						if (BOARD[x][y][z] == 0) {
-							if (utilityFunctions[x][y][z].getUtility() >= bestMove.getUtility()) {
+							if (computer.action()) { // do a random action TODO
 								i = x;
 								j = y;
 								k = z;
-								bestMove = utilityFunctions[x][y][z];
+							}else if (computer.getUtility(x, y, z) >= bestMove.getUtility()) { // make it work for both Comps TODO
+								i = x;
+								j = y;
+								k = z;
+								bestMove.setUtility(computer.getUtility(x, y, z));
 							}
 						}
 					}
@@ -191,6 +215,14 @@ public class TicTakLearner {
 	
 	
 	public int[] winChecker(int user, int depth) {
+		
+		TicTacToeComputer computer = null;
+		
+		if (user == COMPUTER1.getInt()) {
+			computer = COMPUTER1;
+		} else {
+			computer = COMPUTER2;
+		}
 		
 		if (depth == 0) {
 			return null;
@@ -223,7 +255,7 @@ public class TicTakLearner {
 //											location[2] = k;
 //											location[3] = depth--;
 ////											System.out.println(location[0] + " " + location[1] + " " + location[2] + " Three in a row");
-//											utilityFunctions[x][y][z].setUtility(utilityFunctions[x][y][z].getUtility() + 0.05);
+//											computer.setUtility(x, y, z, computer.getUtility(x, y, z) + 0.05);
 //											return location;
 //										}
 //										board[i][j][k] = 0;

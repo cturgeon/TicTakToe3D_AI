@@ -4,9 +4,8 @@ public class TicTacToe3DTester {
 
 	public static void main(String[] args) {
 		TicTakLearner board = new TicTakLearner(2);
-		
 		board.runGame();
 		board.printBoard();
-		board.printUtilities();
+		board.printUtilities(1);
 	}
 }
