@@ -8,7 +8,8 @@ public class TicTacToeComputer {
 	private int myInt;
 	private int BOARDSIZE;
 	
-	private double EPSILON = 0.3; // exploration rate
+	private double EPSILON = 0.15; // exploration rate
+	private double ALPHA = 0.3; // learning rate
 	
 	public TicTacToeComputer(int myInt, LocationUtility[][][] utilities) {
 		this.utilities = utilities;
@@ -45,8 +46,18 @@ public class TicTacToeComputer {
 		return myInt;
 	}
 	
-	public void setUtility(int x, int y, int z, double value) {
-		utilities[x][y][z].setUtility(value);
+	
+	/**
+	 * the main utility function that allows for learning
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param value
+	 * @param turn
+	 */
+	public void setUtility(int x, int y, int z, double value, double turn) {
+		double utilValue = utilities[x][y][z].getUtility() + (ALPHA / turn) * (value - utilities[x][y][z].getUtility());				
+		utilities[x][y][z].setUtility(utilValue);
 	}
 	
 	public double getUtility(int x, int y, int z) {
@@ -61,6 +72,10 @@ public class TicTacToeComputer {
 		}else {
 			return false;
 		}
+	}
+	
+	public double getEpsilon() {
+		return EPSILON;
 	}
 	
 }
