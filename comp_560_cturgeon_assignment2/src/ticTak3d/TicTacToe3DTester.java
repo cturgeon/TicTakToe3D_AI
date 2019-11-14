@@ -1,34 +1,34 @@
 package ticTak3d;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class TicTacToe3DTester {
 
 	public static void main(String[] args) {
-		TicTakLearner board = new TicTakLearner(2);
-		board.runGame(1000);
-		board.printUtilities(2);
+		
+		Scanner scanner = new Scanner(System.in);
+		int size1 = scanner.nextInt();
+		int size2 = scanner.nextInt();
+		int size3 = scanner.nextInt();
+		
+		TicTakLearner board1 = new TicTakLearner(2);
+		board1.runGame(size1);
+		System.out.println("----------");
+		board1.printUtilities(9);
+		System.out.println("----------");
+		
+		TicTakLearner board2 = new TicTakLearner(2);
+		board2.runGame(size2);
+		System.out.println("----------");
+		board2.printUtilities(9);
+		System.out.println("----------");
+		
+		TicTakLearner board3 = new TicTakLearner(2);
+		board3.runGame(size3);
+		System.out.println("----------");
+		board3.printUtilities(9);
+		System.out.println("----------");
+		
+		scanner.close();
 	}
-	
-	
-//	public void executeScript() throws IOException, InterruptedException {
-//	    Process p = Runtime.getRuntime().exec("sh /root/Desktop/chat/script.sh");
-//	    p.waitFor();
-//
-//	    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//	    BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-//
-//
-//	    String line = "";
-//	    while ((line = reader.readLine()) != null) {
-//	        System.out.println(line);
-//	    }
-//
-//	    line = "";
-//	    while ((line = errorReader.readLine()) != null) {
-//	        System.out.println(line);
-//	    }
-//	}
 }

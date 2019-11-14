@@ -8,7 +8,7 @@ public class TicTacToeComputer {
 	private int myInt;
 	private int BOARDSIZE;
 	
-	private double EPSILON = 0.15; // exploration rate
+	private double EPSILON = 0.25; // exploration rate
 	private double ALPHA = 0.3; // learning rate
 	
 	public TicTacToeComputer(int myInt, LocationUtility[][][] utilities) {
@@ -34,7 +34,10 @@ public class TicTacToeComputer {
 		for (int x = 0; x < BOARDSIZE; x++) {
 			for (int y = 0; y < BOARDSIZE; y++) {
 				for (int z = 0; z < BOARDSIZE; z++) {
-					System.out.printf("%.5f" + "  ", utilities[x][y][z].getUtility());
+					if (utilities[x][y][z].getUtility() >= 0) {
+						System.out.print(" ");
+					}
+					System.out.printf("%.3f" + "\t", utilities[x][y][z].getUtility());
 				}
 				System.out.println();
 			}

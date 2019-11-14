@@ -169,22 +169,14 @@ public class TicTakLearner {
 	}
 
 	/**
-	 * prints, may be unneeded as it is used in another class
+	 * prints user utilities
 	 * 
 	 * @param user
 	 */
 	public void printUtilities(int user) {
 		TicTacToeComputer computer = null;
 		computer = (user == ticTacToeAI.getInt()) ? ticTacToeAI : COMPUTER;
-		for (int x = 0; x < BOARDSIZE; x++) {
-			for (int y = 0; y < BOARDSIZE; y++) {
-				for (int z = 0; z < BOARDSIZE; z++) {
-					System.out.printf("%.5f" + "  ", computer.getUtility(x, y, z));
-				}
-				System.out.println();
-			}
-			System.out.println();
-		}
+		computer.printUtilities();
 	}
 
 	/**
@@ -284,11 +276,12 @@ public class TicTakLearner {
 		}
 	}
 
-	// try to get 4 in a row, add good amount to each utility in win conditional
-	// block opponent 4 in a row if able, add good amount to utility
-	// try to get 3 in a row
-	// block opponent 3 in a row if able, add okay amount to utility
-	// do best utility
+	/**
+	 * check if one away from 4 in a row
+	 * @param user
+	 * @param depth
+	 * @return
+	 */
 	public int[] winChecker(int user, int depth) {
 		@SuppressWarnings("unused")
 		TicTacToeComputer computer = null;
