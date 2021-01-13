@@ -1,4 +1,4 @@
-# comp_560_cturgeon_assignment2
+# TicTakToe3D_AI
 To run: Simply change directory to file location. Run the jar file, ex: java -jar cturgeon_assignment2.jar.
 
 This program takes exactly 3 parameters. Numbers between 1-INFINITY. However, an increase in file size considerably increases run time.
